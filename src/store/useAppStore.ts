@@ -67,6 +67,7 @@ interface AppState {
   createReservation: (data: Partial<Reservation> & Pick<Reservation, 'classId' | 'className' | 'suppliesCategory' | 'parentId' | 'parentName' | 'familyId'>) => { success: boolean; message: string; reservation?: Reservation }
   updateReservationStatus: (resId: string, status: ReservationStatus, updates?: Partial<Reservation>) => void
   replaceSupplies: (resId: string, suppliesId: string, suppliesName: string) => void
+  fulfillWaitlistWithSupplies: (waitlistId: string, suppliesId: string) => { success: boolean; message: string; reservation?: Reservation }
 
   createPickup: (data: Omit<PickupRecord, 'id'>) => void
   createReturn: (data: Omit<ReturnRecord, 'id'>) => { success: boolean; message: string; affectsNextClass?: boolean; affectedClassName?: string; inspectionRecord?: InspectionRecord }
@@ -259,6 +260,65 @@ export const useAppStore = create<AppState>((set, get) => ({
         ),
       }
     })
+  },
+
+  fulfillWaitlistWithSupplies: (waitlistId, suppliesId) => {
+    const s = get()
+    const waitlist = s.waitlistEntries.find((w) => w.id === waitlistId)
+    if (!waitlist) {
+      return { success: false, message: '未找到候补记录' }
+    }
+    if (waitlist.status !== 'waiting' && waitlist.status !== 'offered') {
+      return { success: false, message: '该候补状态不允许安排替换用品' }
+    }
+
+    const supply = s.supplies.find((x) => x.id === suppliesId)
+    if (!supply) {
+      return { success: false, message: '未找到用品' }
+    }
+    if (supply.status !== 'available' || !supply.lastSterilizedBatch) {
+      return { success: false, message: '该用品不可用或未完成消毒' }
+    }
+
+    const cls = s.classes.find((c) => c.id === waitlist.classId)
+    const req = cls?.suppliesRequirements.find((x) => x.category === waitlist.suppliesCategory)
+
+    const newReservation: Reservation = {
+      id: 'res_' + Date.now(),
+      code: 'RSV-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + String(Math.floor(Math.random() * 900) + 100),
+      classId: waitlist.classId,
+      className: waitlist.className,
+      suppliesId: supply.id,
+      suppliesName: supply.name,
+      suppliesCode: supply.code,
+      suppliesCategory: waitlist.suppliesCategory,
+      parentId: waitlist.parentId,
+      parentName: waitlist.parentName,
+      familyId: waitlist.familyId,
+      status: 'approved',
+      createdAt: new Date().toISOString(),
+      estimatedPickupTime: req?.latestPickupTime,
+      estimatedReturnTime: cls?.endTime,
+      waitlistPosition: waitlist.position,
+      replacementSuppliesId: supply.id,
+      replacementSuppliesName: supply.name,
+    }
+
+    set((state) => ({
+      waitlistEntries: state.waitlistEntries.map((w) =>
+        w.id === waitlistId ? { ...w, status: 'accepted', isNotified: true } : w
+      ),
+      reservations: [...state.reservations, newReservation],
+      supplies: state.supplies.map((x) =>
+        x.id === suppliesId ? { ...x, status: 'reserved' } : x
+      ),
+    }))
+
+    return {
+      success: true,
+      message: `替换安排成功，已生成预约【${newReservation.code}】，家长可前往领取`,
+      reservation: newReservation,
+    }
   },
 
   createPickup: (data) => {

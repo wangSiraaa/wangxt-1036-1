@@ -12,7 +12,6 @@ import {
   UserMinus,
   Bell,
   Filter,
-
   ArrowRight,
   AlertCircle,
   ArrowLeftRight,
@@ -31,7 +30,7 @@ export default function Waitlist() {
     supplies,
     classes,
     updateWaitlistStatus,
-    replaceSupplies,
+    fulfillWaitlistWithSupplies,
     addWaitlist,
     updateReservationStatus,
   } = useAppStore()
@@ -92,19 +91,19 @@ export default function Waitlist() {
     updateWaitlistStatus(w.id, 'declined')
   }
 
+  const [replaceResult, setReplaceResult] = useState<{ success: boolean; message: string; reservationCode?: string } | null>(null)
+
   const handleConfirmReplace = () => {
     if (!showReplaceModal || !selectedReplaceId) return
-    const supply = supplies.find((s) => s.id === selectedReplaceId)
-    if (!supply) return
-    replaceSupplies(
+    const result = fulfillWaitlistWithSupplies(
       showReplaceModal.id,
-      supply.id,
-      supply.name
+      selectedReplaceId
     )
-    updateWaitlistStatus(showReplaceModal.id, 'accepted')
-    setShowReplaceModal(null)
-    setReplaceStep(0)
-    setSelectedReplaceId('')
+    setReplaceResult({
+      success: result.success,
+      message: result.message,
+      reservationCode: result.reservation?.code,
+    })
   }
 
   return (
@@ -502,37 +501,94 @@ export default function Waitlist() {
                   </div>
                 </div>
               )}
-              {replaceStep === 2 && (() => {
-                const s = supplies.find((x) => x.id === selectedReplaceId)
-                if (!s) return null
-                return (
-                  <div className="p-5 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
-                    <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-200">
-                      <Check size={32} />
+              {replaceStep === 2 && replaceResult && (
+                <div className={clsx(
+                  'p-5 rounded-xl border text-center',
+                  replaceResult.success
+                    ? 'bg-emerald-50 border-emerald-200'
+                    : 'bg-red-50 border-red-200'
+                )}>
+                  <div className={clsx(
+                    'w-16 h-16 mx-auto rounded-full text-white flex items-center justify-center shadow-lg',
+                    replaceResult.success
+                      ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-emerald-200'
+                      : 'bg-gradient-to-br from-red-400 to-red-600 shadow-red-200'
+                  )}>
+                    {replaceResult.success ? <Check size={32} /> : <X size={32} />}
+                  </div>
+                  <h4 className="mt-4 text-xl font-bold text-gray-900">
+                    {replaceResult.success ? '替换安排完成' : '替换安排失败'}
+                  </h4>
+                  <p className={clsx(
+                    'mt-2',
+                    replaceResult.success ? 'text-emerald-700' : 'text-red-700'
+                  )}>
+                    {replaceResult.message}
+                  </p>
+                  {replaceResult.success && replaceResult.reservationCode && (
+                    <>
+                      <div className="mt-4 p-4 bg-white/70 rounded-xl text-left text-sm grid grid-cols-2 gap-2">
+                        <div>
+                          <span className="text-gray-500">预约编号：</span>
+                          <span className="font-mono font-semibold text-primary-600">{replaceResult.reservationCode}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">用品：</span>
+                          <span className="font-semibold">{supplies.find((x) => x.id === selectedReplaceId)?.name}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">编码：</span>
+                          <span className="font-mono font-semibold">{supplies.find((x) => x.id === selectedReplaceId)?.code}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">消毒批次：</span>
+                          <span className="font-mono text-purple-600">{supplies.find((x) => x.id === selectedReplaceId)?.lastSterilizedBatch}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">家长：</span>
+                          <span className="font-semibold">{showReplaceModal?.parentName}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">状态：</span>
+                          <span className="font-semibold text-emerald-600">待领取</span>
+                        </div>
+                      </div>
+                      <div className="mt-4 text-xs text-gray-500 bg-white/50 p-2 rounded">
+                        💡 该预约已自动同步到<strong>家长我的预约</strong>和<strong>护士领用办理</strong>列表，可直接前往办理领用
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              {replaceStep === 2 && !replaceResult && (
+                <div className="p-5 rounded-xl bg-gray-50 border border-gray-200">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-gray-200 text-gray-400 flex items-center justify-center">
+                      <Package size={32} />
                     </div>
-                    <h4 className="mt-4 text-xl font-bold text-gray-900">替换安排完成</h4>
-                    <p className="mt-2 text-emerald-700">已为该家长安排替换用品，系统将更新候补状态并生成预约</p>
-                    <div className="mt-4 p-4 bg-white/70 rounded-xl text-left text-sm grid grid-cols-2 gap-2">
-                      <div>
-                        <span className="text-gray-500">用品：</span>
-                        <span className="font-semibold">{s.name}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">编码：</span>
-                        <span className="font-mono font-semibold">{s.code}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">消毒批次：</span>
-                        <span className="font-mono text-primary-600">{s.lastSterilizedBatch}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">家长：</span>
-                        <span className="font-semibold">{showReplaceModal.parentName}</span>
-                      </div>
+                    <h4 className="mt-4 text-xl font-bold text-gray-900">确认替换信息</h4>
+                    <p className="mt-2 text-gray-500">请确认以下替换用品信息，确认后将生成正式预约</p>
+                  </div>
+                  <div className="mt-4 p-4 bg-white rounded-xl text-sm grid grid-cols-2 gap-2">
+                    <div>
+                      <span className="text-gray-500">用品：</span>
+                      <span className="font-semibold">{supplies.find((x) => x.id === selectedReplaceId)?.name}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">编码：</span>
+                      <span className="font-mono font-semibold">{supplies.find((x) => x.id === selectedReplaceId)?.code}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">消毒批次：</span>
+                      <span className="font-mono text-purple-600">{supplies.find((x) => x.id === selectedReplaceId)?.lastSterilizedBatch}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">家长：</span>
+                      <span className="font-semibold">{showReplaceModal?.parentName}</span>
                     </div>
                   </div>
-                )
-              })()}
+                </div>
+              )}
             </div>
             <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
               <div>
@@ -548,14 +604,20 @@ export default function Waitlist() {
                     setShowReplaceModal(null)
                     setReplaceStep(0)
                     setSelectedReplaceId('')
+                    setReplaceResult(null)
                   }}
                   className="btn-outline"
                 >
-                  取消
+                  {replaceStep === 2 && replaceResult ? '关闭' : '取消'}
                 </button>
                 {replaceStep < 2 && (
                   <button
-                    onClick={() => setReplaceStep(replaceStep + 1)}
+                    onClick={() => {
+                      if (replaceStep === 1 && selectedReplaceId) {
+                        handleConfirmReplace()
+                      }
+                      setReplaceStep(replaceStep + 1)
+                    }}
                     disabled={replaceStep === 1 && !selectedReplaceId}
                     className="btn-primary"
                   >
@@ -563,10 +625,22 @@ export default function Waitlist() {
                     <ArrowRight size={14} className="ml-2" />
                   </button>
                 )}
-                {replaceStep === 2 && (
-                  <button onClick={handleConfirmReplace} className="btn-success">
-                    <Check size={16} className="mr-2" /> 完成
-                  </button>
+                {replaceStep === 2 && replaceResult && replaceResult.success && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setShowReplaceModal(null)
+                        setReplaceStep(0)
+                        setSelectedReplaceId('')
+                        setReplaceResult(null)
+                        navigate('/pickup')
+                      }}
+                      className="btn-primary"
+                    >
+                      前往领用办理
+                      <ArrowRight size={14} className="ml-2" />
+                    </button>
+                  </>
                 )}
               </div>
             </div>
