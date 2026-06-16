@@ -12,6 +12,8 @@ import {
   ChevronDown,
   LogOut,
   LayoutDashboard,
+  CalendarDays,
+  ShieldAlert,
 } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { UserRole } from '../types'
@@ -24,10 +26,11 @@ const roleMap: Record<UserRole, { label: string; color: string; icon: string }> 
   parent: { label: '家长', color: 'bg-pink-100 text-pink-700', icon: '👩‍👧' },
 }
 
-const roleMenus: Record<UserRole, { to: string; label: string; icon: React.ReactNode }[]> = {
+const roleMenus: Record<UserRole, { to: string; label: string; icon: React.ReactNode; badge?: string }[]> = {
   lecturer: [
     { to: '/dashboard', label: '工作台', icon: <LayoutDashboard size={18} /> },
     { to: '/classes', label: '课堂管理', icon: <BookOpen size={18} /> },
+    { to: '/turnover-plan', label: '周转计划', icon: <CalendarDays size={18} /> },
     { to: '/dashboard', label: '用品需求', icon: <Package size={18} /> },
   ],
   nurse: [
@@ -35,13 +38,15 @@ const roleMenus: Record<UserRole, { to: string; label: string; icon: React.React
     { to: '/classes', label: '课堂列表', icon: <BookOpen size={18} /> },
     { to: '/pickup', label: '领用办理', icon: <ClipboardList size={18} /> },
     { to: '/return', label: '归还办理', icon: <RotateCcw size={18} /> },
+    { to: '/turnover-plan', label: '周转计划', icon: <CalendarDays size={18} /> },
     { to: '/overdue', label: '逾期管理', icon: <AlertTriangle size={18} /> },
   ],
   warehouse: [
     { to: '/dashboard', label: '工作台', icon: <LayoutDashboard size={18} /> },
     { to: '/supplies', label: '用品管理', icon: <Package size={18} /> },
     { to: '/sterilization', label: '消毒管理', icon: <Sparkles size={18} /> },
-    { to: '/dashboard', label: '周转看板', icon: <Clock size={18} /> },
+    { to: '/inspection', label: '复检处理', icon: <ShieldAlert size={18} />, badge: 'inspection' },
+    { to: '/turnover-plan', label: '周转计划', icon: <CalendarDays size={18} /> },
   ],
   parent: [
     { to: '/dashboard', label: '工作台', icon: <LayoutDashboard size={18} /> },
@@ -53,11 +58,12 @@ const roleMenus: Record<UserRole, { to: string; label: string; icon: React.React
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { currentUser, users, switchRole, overdueRecords } = useAppStore()
+  const { currentUser, users, switchRole, overdueRecords, inspectionRecords } = useAppStore()
   const navigate = useNavigate()
   const menus = useMemo(() => roleMenus[currentUser.role], [currentUser.role])
   const roleInfo = roleMap[currentUser.role]
   const overdueCount = overdueRecords.filter((o) => o.isFrozen || o.overdueDays > 0).length
+  const pendingInspectionCount = inspectionRecords.filter((r) => r.status === 'pending').length
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -133,13 +139,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               >
                 {menu.icon}
                 <span>{menu.label}</span>
-                {menu.label === '逾期管理' || menu.label === '逾期提醒' ? (
-                  overdueCount > 0 && (
-                    <span className="ml-auto bg-danger text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
-                      {overdueCount}
-                    </span>
-                  )
-                ) : null}
+                {(menu.label === '逾期管理' || menu.label === '逾期提醒') && overdueCount > 0 && (
+                  <span className="ml-auto bg-danger text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
+                    {overdueCount}
+                  </span>
+                )}
+                {menu.badge === 'inspection' && pendingInspectionCount > 0 && (
+                  <span className="ml-auto bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold animate-pulse">
+                    {pendingInspectionCount}
+                  </span>
+                )}
               </NavLink>
             ))}
           </div>

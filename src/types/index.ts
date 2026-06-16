@@ -19,7 +19,7 @@ export const suppliesCategoryMap: Record<SuppliesCategory, string> = {
   rehab_device: '康复辅具',
 }
 
-export type SuppliesStatus = 'available' | 'in_use' | 'sterilizing' | 'maintenance' | 'reserved'
+export type SuppliesStatus = 'available' | 'in_use' | 'sterilizing' | 'maintenance' | 'reserved' | 'pending_inspection'
 
 export const suppliesStatusMap: Record<SuppliesStatus, string> = {
   available: '可领用',
@@ -27,6 +27,7 @@ export const suppliesStatusMap: Record<SuppliesStatus, string> = {
   sterilizing: '消毒中',
   maintenance: '维修中',
   reserved: '已预约',
+  pending_inspection: '待复检',
 }
 
 export interface Supplies {
@@ -40,6 +41,10 @@ export interface Supplies {
   nextMaintenanceAt?: string
   notes?: string
   model?: string
+  ageMinMonths?: number
+  ageMaxMonths?: number
+  sterilizationWindowHours?: number
+  lastPendingInspectionAt?: string
 }
 
 export type ClassStatus = 'draft' | 'published' | 'open' | 'ongoing' | 'completed' | 'cancelled'
@@ -244,4 +249,96 @@ export interface ReplacementOption {
   suppliesName: string
   suppliesCode: string
   available: boolean
+}
+
+export type InspectionStatus = 'pending' | 'passed' | 'failed'
+
+export const inspectionStatusMap: Record<InspectionStatus, string> = {
+  pending: '待复检',
+  passed: '复检通过',
+  failed: '需维修',
+}
+
+export interface InspectionRecord {
+  id: string
+  returnRecordId: string
+  suppliesId: string
+  suppliesName: string
+  suppliesCode: string
+  condition: ReturnCondition
+  damageDescription?: string
+  nurseId: string
+  nurseName: string
+  submittedAt: string
+  inspectorId?: string
+  inspectorName?: string
+  inspectedAt?: string
+  status: InspectionStatus
+  safetyAssessment?: 'safe' | 'caution' | 'unsafe'
+  inspectionNotes?: string
+  maintenanceRequired?: boolean
+  reSterilizeRequired?: boolean
+  affectsUpcomingClasses?: boolean
+  affectedReservationIds?: string[]
+}
+
+export type OccupancyType = 'reservation' | 'pickup' | 'sterilization' | 'inspection' | 'maintenance' | 'replacement_wait'
+
+export const occupancyTypeMap: Record<OccupancyType, string> = {
+  reservation: '课堂预约',
+  pickup: '使用中',
+  sterilization: '消毒中',
+  inspection: '待复检',
+  maintenance: '维修中',
+  replacement_wait: '待替换',
+}
+
+export interface SuppliesOccupancy {
+  id: string
+  suppliesId: string
+  suppliesName: string
+  suppliesCode: string
+  type: OccupancyType
+  reservationId?: string
+  pickupId?: string
+  sterilizationId?: string
+  inspectionId?: string
+  classId?: string
+  className?: string
+  parentId?: string
+  parentName?: string
+  startTime: string
+  endTime: string
+  lockReason?: string
+  replacementForReservationId?: string
+  createdAt: string
+}
+
+export interface TransferCheckResult {
+  canTransfer: boolean
+  reasons: string[]
+  checks: {
+    sterilizationWindow: { passed: boolean; message: string; readyAt?: string }
+    ageLimit: { passed: boolean; message: string }
+    inventoryConflict: { passed: boolean; message: string; conflictingClasses?: string[] }
+  }
+  alternatives: ReplacementOption[]
+}
+
+export interface ClassTransferRecord {
+  id: string
+  originalReservationId: string
+  originalClassId: string
+  originalClassName: string
+  newReservationId?: string
+  newClassId: string
+  newClassName: string
+  suppliesId?: string
+  parentId: string
+  parentName: string
+  transferCheckResult?: TransferCheckResult
+  status: 'requested' | 'checking' | 'transferred' | 'rejected'
+  createdAt: string
+  processedAt?: string
+  notes?: string
 }

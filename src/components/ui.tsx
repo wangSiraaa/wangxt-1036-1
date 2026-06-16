@@ -23,6 +23,7 @@ export function SuppliesStatusBadge({ status }: { status: SuppliesStatus }) {
     sterilizing: 'bg-purple-100 text-purple-700',
     maintenance: 'bg-orange-100 text-orange-700',
     reserved: 'bg-amber-100 text-amber-700',
+    pending_inspection: 'bg-amber-100 text-amber-800 border border-amber-200',
   }
   return <span className={clsx('badge', styles[status])}>{label}</span>
 }

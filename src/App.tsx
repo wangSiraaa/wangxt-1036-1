@@ -11,6 +11,8 @@ import ReturnPage from './pages/ReturnPage'
 import Sterilization from './pages/Sterilization'
 import Overdue from './pages/Overdue'
 import Waitlist from './pages/Waitlist'
+import TurnoverPlan from './pages/TurnoverPlan'
+import InspectionList from './pages/InspectionList'
 
 export default function App() {
   return (
@@ -28,6 +30,8 @@ export default function App() {
         <Route path="/sterilization" element={<Sterilization />} />
         <Route path="/overdue" element={<Overdue />} />
         <Route path="/waitlist" element={<Waitlist />} />
+        <Route path="/turnover-plan" element={<TurnoverPlan />} />
+        <Route path="/inspection" element={<InspectionList />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </AppLayout>
