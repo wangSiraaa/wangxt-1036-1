@@ -1,0 +1,193 @@
+import {
+  User,
+  Supplies,
+  ClassEntity,
+  Registration,
+  Reservation,
+  PickupRecord,
+  ReturnRecord,
+  SterilizationRecord,
+  OverdueRecord,
+  WaitlistEntry,
+} from '../types'
+
+export const mockUsers: User[] = [
+  { id: 'u_lecturer_1', name: '王医生', role: 'lecturer', phone: '13800000001', department: '产科', title: '主任医师' },
+  { id: 'u_lecturer_2', name: '李老师', role: 'lecturer', phone: '13800000002', department: '儿科', title: '主治医师' },
+  { id: 'u_nurse_1', name: '张护士', role: 'nurse', phone: '13800000003', department: '母婴护理中心', title: '主管护士' },
+  { id: 'u_nurse_2', name: '刘护士', role: 'nurse', phone: '13800000004', department: '母婴护理中心', title: '护士' },
+  { id: 'u_warehouse_1', name: '陈库管', role: 'warehouse', phone: '13800000005', department: '物资管理部', title: '库管员' },
+  { id: 'u_parent_1', name: '林女士', role: 'parent', phone: '13800000011', familyId: 'f001' },
+  { id: 'u_parent_2', name: '赵女士', role: 'parent', phone: '13800000012', familyId: 'f002' },
+  { id: 'u_parent_3', name: '孙女士', role: 'parent', phone: '13800000013', familyId: 'f003' },
+  { id: 'u_parent_4', name: '周女士', role: 'parent', phone: '13800000014', familyId: 'f004' },
+  { id: 'u_parent_5', name: '吴女士', role: 'parent', phone: '13800000015', familyId: 'f005' },
+]
+
+export const mockSupplies: Supplies[] = [
+  { id: 's001', code: 'SCALE-001', name: '电子婴儿秤 A型', category: 'baby_scale', status: 'available', lastSterilizedBatch: 'DIS-20260615-001', lastSterilizedAt: '2026-06-15T08:00:00', model: 'MICS-100' },
+  { id: 's002', code: 'SCALE-002', name: '电子婴儿秤 A型', category: 'baby_scale', status: 'in_use', lastSterilizedBatch: 'DIS-20260614-002', lastSterilizedAt: '2026-06-14T08:00:00', model: 'MICS-100' },
+  { id: 's003', code: 'SCALE-003', name: '电子婴儿秤 B型', category: 'baby_scale', status: 'sterilizing', model: 'MICS-200' },
+  { id: 's004', code: 'SCALE-004', name: '电子婴儿秤 A型', category: 'baby_scale', status: 'available', lastSterilizedBatch: 'DIS-20260615-001', lastSterilizedAt: '2026-06-15T08:00:00', model: 'MICS-100' },
+  { id: 's005', code: 'SCALE-005', name: '电子婴儿秤 B型', category: 'baby_scale', status: 'reserved', lastSterilizedBatch: 'DIS-20260615-001', lastSterilizedAt: '2026-06-15T08:00:00', model: 'MICS-200' },
+  { id: 's006', code: 'PILLOW-001', name: '多功能哺乳枕 标准款', category: 'nursing_pillow', status: 'available', lastSterilizedBatch: 'DIS-20260615-003', lastSterilizedAt: '2026-06-15T08:30:00', model: 'MNP-100' },
+  { id: 's007', code: 'PILLOW-002', name: '多功能哺乳枕 标准款', category: 'nursing_pillow', status: 'available', lastSterilizedBatch: 'DIS-20260615-003', lastSterilizedAt: '2026-06-15T08:30:00', model: 'MNP-100' },
+  { id: 's008', code: 'PILLOW-003', name: '多功能哺乳枕 豪华款', category: 'nursing_pillow', status: 'in_use', lastSterilizedBatch: 'DIS-20260614-004', lastSterilizedAt: '2026-06-14T08:30:00', model: 'MNP-200' },
+  { id: 's009', code: 'PILLOW-004', name: '多功能哺乳枕 标准款', category: 'nursing_pillow', status: 'sterilizing', model: 'MNP-100' },
+  { id: 's010', code: 'PILLOW-005', name: '多功能哺乳枕 豪华款', category: 'nursing_pillow', status: 'available', lastSterilizedBatch: 'DIS-20260615-003', lastSterilizedAt: '2026-06-15T08:30:00', model: 'MNP-200' },
+  { id: 's011', code: 'REHAB-001', name: '产后骨盆修复仪', category: 'rehab_device', status: 'available', lastSterilizedBatch: 'DIS-20260615-005', lastSterilizedAt: '2026-06-15T09:00:00', model: 'MRD-100' },
+  { id: 's012', code: 'REHAB-002', name: '产后盆底康复仪', category: 'rehab_device', status: 'available', lastSterilizedBatch: 'DIS-20260615-005', lastSterilizedAt: '2026-06-15T09:00:00', model: 'MRD-200' },
+  { id: 's013', code: 'REHAB-003', name: '产后骨盆修复仪', category: 'rehab_device', status: 'in_use', lastSterilizedBatch: 'DIS-20260614-006', lastSterilizedAt: '2026-06-14T09:00:00', model: 'MRD-100' },
+  { id: 's014', code: 'REHAB-004', name: '产后盆底康复仪', category: 'rehab_device', status: 'maintenance', model: 'MRD-200', notes: '电极更换中' },
+  { id: 's015', code: 'REHAB-005', name: '产后腹直肌修复仪', category: 'rehab_device', status: 'available', lastSterilizedBatch: 'DIS-20260615-005', lastSterilizedAt: '2026-06-15T09:00:00', model: 'MRD-300' },
+]
+
+export const mockClasses: ClassEntity[] = [
+  {
+    id: 'c001',
+    code: 'MC-20260617-001',
+    title: '新生儿护理技能课（一）',
+    description: '学习新生儿日常护理、母乳喂养基础、婴儿体重监测等核心技能。',
+    lecturerId: 'u_lecturer_1',
+    lecturerName: '王医生',
+    startTime: '2026-06-17T09:00:00',
+    endTime: '2026-06-17T11:30:00',
+    location: '母婴培训室A',
+    maxParticipants: 15,
+    currentParticipants: 12,
+    status: 'open',
+    suppliesRequirements: [
+      { category: 'baby_scale', quantity: 5, latestPickupTime: '2026-06-17T08:30:00' },
+      { category: 'nursing_pillow', quantity: 8, latestPickupTime: '2026-06-17T08:30:00' },
+    ],
+    createdAt: '2026-06-10T14:00:00',
+  },
+  {
+    id: 'c002',
+    code: 'MC-20260618-002',
+    title: '产后康复指导课',
+    description: '产后骨盆修复、盆底肌训练、腹直肌恢复的专业指导与实操。',
+    lecturerId: 'u_lecturer_2',
+    lecturerName: '李老师',
+    startTime: '2026-06-18T14:00:00',
+    endTime: '2026-06-18T17:00:00',
+    location: '康复训练室B',
+    maxParticipants: 10,
+    currentParticipants: 8,
+    status: 'open',
+    suppliesRequirements: [
+      { category: 'rehab_device', quantity: 6, latestPickupTime: '2026-06-18T13:30:00' },
+      { category: 'nursing_pillow', quantity: 3, latestPickupTime: '2026-06-18T13:30:00' },
+    ],
+    createdAt: '2026-06-11T10:00:00',
+  },
+  {
+    id: 'c003',
+    code: 'MC-20260616-003',
+    title: '母乳喂养实操课',
+    description: '正确哺乳姿势、乳头护理、奶量评估等实操训练。',
+    lecturerId: 'u_lecturer_1',
+    lecturerName: '王医生',
+    startTime: '2026-06-16T09:30:00',
+    endTime: '2026-06-16T12:00:00',
+    location: '母婴培训室A',
+    maxParticipants: 12,
+    currentParticipants: 12,
+    status: 'completed',
+    suppliesRequirements: [
+      { category: 'nursing_pillow', quantity: 10, latestPickupTime: '2026-06-16T09:00:00' },
+    ],
+    createdAt: '2026-06-08T16:00:00',
+  },
+  {
+    id: 'c004',
+    code: 'MC-20260620-004',
+    title: '婴儿发育监测与评估',
+    description: '婴儿体格发育监测、神经行为评估、生长曲线解读。',
+    lecturerId: 'u_lecturer_2',
+    lecturerName: '李老师',
+    startTime: '2026-06-20T10:00:00',
+    endTime: '2026-06-20T12:30:00',
+    location: '母婴培训室B',
+    maxParticipants: 15,
+    currentParticipants: 6,
+    status: 'published',
+    suppliesRequirements: [
+      { category: 'baby_scale', quantity: 8, latestPickupTime: '2026-06-20T09:30:00' },
+      { category: 'rehab_device', quantity: 2, latestPickupTime: '2026-06-20T09:30:00' },
+    ],
+    createdAt: '2026-06-12T09:00:00',
+  },
+  {
+    id: 'c005',
+    code: 'MC-20260619-005',
+    title: '高级产后康复综合课',
+    description: '融合骨盆、盆底、腹直肌修复的综合康复训练课程。',
+    lecturerId: 'u_lecturer_2',
+    lecturerName: '李老师',
+    startTime: '2026-06-19T09:00:00',
+    endTime: '2026-06-19T16:00:00',
+    location: '康复训练室A',
+    maxParticipants: 8,
+    currentParticipants: 8,
+    status: 'open',
+    suppliesRequirements: [
+      { category: 'rehab_device', quantity: 8, latestPickupTime: '2026-06-19T08:30:00' },
+      { category: 'nursing_pillow', quantity: 4, latestPickupTime: '2026-06-19T08:30:00' },
+      { category: 'baby_scale', quantity: 2, latestPickupTime: '2026-06-19T08:30:00' },
+    ],
+    createdAt: '2026-06-11T14:00:00',
+  },
+]
+
+export const mockRegistrations: Registration[] = [
+  { id: 'r001', classId: 'c001', className: '新生儿护理技能课（一）', parentId: 'u_parent_1', parentName: '林女士', familyId: 'f001', status: 'approved', registeredAt: '2026-06-11T10:30:00' },
+  { id: 'r002', classId: 'c001', className: '新生儿护理技能课（一）', parentId: 'u_parent_2', parentName: '赵女士', familyId: 'f002', status: 'approved', registeredAt: '2026-06-11T11:20:00' },
+  { id: 'r003', classId: 'c001', className: '新生儿护理技能课（一）', parentId: 'u_parent_3', parentName: '孙女士', familyId: 'f003', status: 'pending', registeredAt: '2026-06-15T09:15:00' },
+  { id: 'r004', classId: 'c002', className: '产后康复指导课', parentId: 'u_parent_1', parentName: '林女士', familyId: 'f001', status: 'approved', registeredAt: '2026-06-12T09:00:00' },
+  { id: 'r005', classId: 'c002', className: '产后康复指导课', parentId: 'u_parent_4', parentName: '周女士', familyId: 'f004', status: 'approved', registeredAt: '2026-06-12T14:30:00' },
+  { id: 'r006', classId: 'c003', className: '母乳喂养实操课', parentId: 'u_parent_1', parentName: '林女士', familyId: 'f001', status: 'attended', registeredAt: '2026-06-10T10:00:00' },
+  { id: 'r007', classId: 'c003', className: '母乳喂养实操课', parentId: 'u_parent_2', parentName: '赵女士', familyId: 'f002', status: 'attended', registeredAt: '2026-06-10T11:00:00' },
+  { id: 'r008', classId: 'c005', className: '高级产后康复综合课', parentId: 'u_parent_5', parentName: '吴女士', familyId: 'f005', status: 'approved', registeredAt: '2026-06-13T10:00:00' },
+  { id: 'r009', classId: 'c005', className: '高级产后康复综合课', parentId: 'u_parent_2', parentName: '赵女士', familyId: 'f002', status: 'approved', registeredAt: '2026-06-13T11:00:00' },
+]
+
+export const mockReservations: Reservation[] = [
+  { id: 'res001', code: 'RSV-20260616-001', classId: 'c001', className: '新生儿护理技能课（一）', suppliesId: 's001', suppliesName: '电子婴儿秤 A型', suppliesCode: 'SCALE-001', suppliesCategory: 'baby_scale', parentId: 'u_parent_1', parentName: '林女士', familyId: 'f001', status: 'approved', createdAt: '2026-06-15T10:00:00', estimatedPickupTime: '2026-06-17T08:00:00', estimatedReturnTime: '2026-06-17T14:00:00' },
+  { id: 'res002', code: 'RSV-20260616-002', classId: 'c001', className: '新生儿护理技能课（一）', suppliesId: 's006', suppliesName: '多功能哺乳枕 标准款', suppliesCode: 'PILLOW-001', suppliesCategory: 'nursing_pillow', parentId: 'u_parent_1', parentName: '林女士', familyId: 'f001', status: 'approved', createdAt: '2026-06-15T10:02:00', estimatedPickupTime: '2026-06-17T08:00:00', estimatedReturnTime: '2026-06-17T14:00:00' },
+  { id: 'res003', code: 'RSV-20260616-003', classId: 'c002', className: '产后康复指导课', suppliesId: 's011', suppliesName: '产后骨盆修复仪', suppliesCode: 'REHAB-001', suppliesCategory: 'rehab_device', parentId: 'u_parent_1', parentName: '林女士', familyId: 'f001', status: 'pending', createdAt: '2026-06-15T14:30:00', estimatedPickupTime: '2026-06-18T13:00:00', estimatedReturnTime: '2026-06-18T19:00:00' },
+  { id: 'res004', code: 'RSV-20260616-004', classId: 'c001', className: '新生儿护理技能课（一）', suppliesName: '电子婴儿秤（候补）', suppliesCategory: 'baby_scale', parentId: 'u_parent_3', parentName: '孙女士', familyId: 'f003', status: 'waitlisted', createdAt: '2026-06-15T16:00:00', waitlistPosition: 1 },
+  { id: 'res005', code: 'RSV-20260615-005', classId: 'c003', className: '母乳喂养实操课', suppliesId: 's008', suppliesName: '多功能哺乳枕 豪华款', suppliesCode: 'PILLOW-003', suppliesCategory: 'nursing_pillow', parentId: 'u_parent_2', parentName: '赵女士', familyId: 'f002', status: 'picked_up', createdAt: '2026-06-14T10:00:00', estimatedPickupTime: '2026-06-16T08:30:00', estimatedReturnTime: '2026-06-16T15:00:00' },
+  { id: 'res006', code: 'RSV-20260615-006', classId: 'c003', className: '母乳喂养实操课', suppliesId: 's002', suppliesName: '电子婴儿秤 A型', suppliesCode: 'SCALE-002', suppliesCategory: 'baby_scale', parentId: 'u_parent_2', parentName: '赵女士', familyId: 'f002', status: 'picked_up', createdAt: '2026-06-14T10:05:00', estimatedPickupTime: '2026-06-16T08:30:00', estimatedReturnTime: '2026-06-16T15:00:00' },
+  { id: 'res007', code: 'RSV-20260615-007', classId: 'c005', className: '高级产后康复综合课', suppliesName: '产后康复辅具（候补）', suppliesCategory: 'rehab_device', parentId: 'u_parent_5', parentName: '吴女士', familyId: 'f005', status: 'waitlisted', createdAt: '2026-06-15T09:00:00', waitlistPosition: 1 },
+]
+
+export const mockPickupRecords: PickupRecord[] = [
+  { id: 'p001', reservationId: 'res005', suppliesId: 's008', suppliesName: '多功能哺乳枕 豪华款', suppliesCode: 'PILLOW-003', suppliesCategory: 'nursing_pillow', parentId: 'u_parent_2', parentName: '赵女士', familyId: 'f002', classId: 'c003', className: '母乳喂养实操课', nurseId: 'u_nurse_1', nurseName: '张护士', sterilizedBatch: 'DIS-20260614-004', usageNotes: '使用前检查枕套完整性', pickupTime: '2026-06-16T08:35:00', expectedReturnTime: '2026-06-16T15:00:00', isReturned: false },
+  { id: 'p002', reservationId: 'res006', suppliesId: 's002', suppliesName: '电子婴儿秤 A型', suppliesCode: 'SCALE-002', suppliesCategory: 'baby_scale', parentId: 'u_parent_2', parentName: '赵女士', familyId: 'f002', classId: 'c003', className: '母乳喂养实操课', nurseId: 'u_nurse_2', nurseName: '刘护士', sterilizedBatch: 'DIS-20260614-002', usageNotes: '秤盘需垫干净毛巾', pickupTime: '2026-06-16T08:40:00', expectedReturnTime: '2026-06-16T15:00:00', isReturned: false },
+  { id: 'p003', reservationId: 'res_old_1', suppliesId: 's013', suppliesName: '产后骨盆修复仪', suppliesCode: 'REHAB-003', suppliesCategory: 'rehab_device', parentId: 'u_parent_4', parentName: '周女士', familyId: 'f004', classId: 'c_old_1', className: '产后康复训练课（历史）', nurseId: 'u_nurse_1', nurseName: '张护士', sterilizedBatch: 'DIS-20260614-006', pickupTime: '2026-06-14T08:30:00', expectedReturnTime: '2026-06-15T18:00:00', isReturned: false },
+]
+
+export const mockReturnRecords: ReturnRecord[] = [
+  { id: 'ret001', pickupId: 'p_old_1', suppliesId: 's001', suppliesName: '电子婴儿秤 A型', condition: 'good', needReSterilize: true, affectsNextClass: false, nurseId: 'u_nurse_1', nurseName: '张护士', returnedAt: '2026-06-15T14:30:00' },
+  { id: 'ret002', pickupId: 'p_old_2', suppliesId: 's006', suppliesName: '多功能哺乳枕 标准款', condition: 'damaged_minor', needReSterilize: true, affectsNextClass: false, notes: '枕套有轻微污渍，已送洗', nurseId: 'u_nurse_2', nurseName: '刘护士', returnedAt: '2026-06-15T15:00:00' },
+  { id: 'ret003', pickupId: 'p_old_3', suppliesId: 's011', suppliesName: '产后骨盆修复仪', condition: 'good', needReSterilize: true, affectsNextClass: false, nurseId: 'u_nurse_1', nurseName: '张护士', returnedAt: '2026-06-14T19:00:00' },
+]
+
+export const mockSterilizationRecords: SterilizationRecord[] = [
+  { id: 'st001', batchNumber: 'DIS-20260615-001', suppliesIds: ['s001', 's004', 's005'], suppliesNames: '电子婴儿秤 × 3', warehouseId: 'u_warehouse_1', warehouseName: '陈库管', status: 'completed', startTime: '2026-06-15T07:00:00', endTime: '2026-06-15T08:00:00', method: '高温蒸汽消毒', temperature: 121, duration: 30 },
+  { id: 'st002', batchNumber: 'DIS-20260615-003', suppliesIds: ['s006', 's007', 's010'], suppliesNames: '哺乳枕 × 3', warehouseId: 'u_warehouse_1', warehouseName: '陈库管', status: 'completed', startTime: '2026-06-15T07:30:00', endTime: '2026-06-15T08:30:00', method: '紫外线消毒+枕套更换', temperature: undefined, duration: 60 },
+  { id: 'st003', batchNumber: 'DIS-20260615-005', suppliesIds: ['s011', 's012', 's015'], suppliesNames: '康复辅具 × 3', warehouseId: 'u_warehouse_1', warehouseName: '陈库管', status: 'completed', startTime: '2026-06-15T08:00:00', endTime: '2026-06-15T09:00:00', method: '酒精擦拭+紫外线消毒', duration: 60 },
+  { id: 'st004', batchNumber: 'DIS-20260616-001', suppliesIds: ['s003'], suppliesNames: '电子婴儿秤 × 1', warehouseId: 'u_warehouse_1', warehouseName: '陈库管', status: 'in_progress', startTime: '2026-06-16T09:00:00', method: '高温蒸汽消毒', temperature: 121, duration: 30 },
+  { id: 'st005', batchNumber: 'DIS-20260616-002', suppliesIds: ['s009'], suppliesNames: '哺乳枕 × 1', warehouseId: 'u_warehouse_1', warehouseName: '陈库管', status: 'pending', startTime: '2026-06-16T10:00:00', method: '紫外线消毒+枕套更换' },
+]
+
+export const mockOverdueRecords: OverdueRecord[] = [
+  { id: 'o001', pickupId: 'p003', suppliesId: 's013', suppliesName: '产后骨盆修复仪', suppliesCode: 'REHAB-003', suppliesCategory: 'rehab_device', parentId: 'u_parent_4', parentName: '周女士', familyId: 'f004', expectedReturnTime: '2026-06-15T18:00:00', overdueDays: 1, isFrozen: false, createdAt: '2026-06-16T08:00:00' },
+  { id: 'o002', pickupId: 'p_old_frozen', suppliesId: 's_old_1', suppliesName: '多功能哺乳枕 标准款', suppliesCode: 'PILLOW-OLD', suppliesCategory: 'nursing_pillow', parentId: 'u_parent_5', parentName: '吴女士', familyId: 'f005', expectedReturnTime: '2026-06-12T18:00:00', overdueDays: 4, isFrozen: true, frozenAt: '2026-06-14T08:00:00', frozenReason: '逾期超过3天未归还，账户已冻结', createdAt: '2026-06-13T08:00:00' },
+]
+
+export const mockWaitlistEntries: WaitlistEntry[] = [
+  { id: 'w001', classId: 'c001', className: '新生儿护理技能课（一）', suppliesCategory: 'baby_scale', parentId: 'u_parent_3', parentName: '孙女士', familyId: 'f003', position: 1, createdAt: '2026-06-15T16:00:00', expiresAt: '2026-06-17T06:00:00', isNotified: false, status: 'waiting' },
+  { id: 'w002', classId: 'c005', className: '高级产后康复综合课', suppliesCategory: 'rehab_device', parentId: 'u_parent_5', parentName: '吴女士', familyId: 'f005', position: 1, createdAt: '2026-06-15T09:00:00', expiresAt: '2026-06-19T06:00:00', isNotified: true, status: 'offered' },
+]
