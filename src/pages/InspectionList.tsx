@@ -458,11 +458,17 @@ export default function InspectionList() {
                               onClick={() => setResolveData({ ...resolveData, safetyAssessment: opt.value })}
                               className={clsx(
                                 'text-left p-3 rounded-xl border-2 transition-all',
-                                resolveData.safetyAssessment === opt.value
-                                  ? opt.color === 'emerald' && 'border-emerald-400 bg-emerald-50',
-                                  opt.color === 'amber' && resolveData.safetyAssessment === opt.value && 'border-amber-400 bg-amber-50',
-                                  opt.color === 'rose' && resolveData.safetyAssessment === opt.value && 'border-rose-400 bg-rose-50',
-                                  resolveData.safetyAssessment !== opt.value && 'border-gray-200 bg-white hover:border-gray-300'
+                                resolveData.safetyAssessment === opt.value &&
+                                  opt.color === 'emerald' &&
+                                  'border-emerald-400 bg-emerald-50',
+                                resolveData.safetyAssessment === opt.value &&
+                                  opt.color === 'amber' &&
+                                  'border-amber-400 bg-amber-50',
+                                resolveData.safetyAssessment === opt.value &&
+                                  opt.color === 'rose' &&
+                                  'border-rose-400 bg-rose-50',
+                                resolveData.safetyAssessment !== opt.value &&
+                                  'border-gray-200 bg-white hover:border-gray-300'
                               )}
                             >
                               <div

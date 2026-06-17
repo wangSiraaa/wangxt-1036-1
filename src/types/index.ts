@@ -259,6 +259,14 @@ export const inspectionStatusMap: Record<InspectionStatus, string> = {
   failed: '需维修',
 }
 
+export type SafetyAssessment = 'safe' | 'caution' | 'unsafe'
+
+export const safetyAssessmentMap: Record<SafetyAssessment, string> = {
+  safe: '安全可用',
+  caution: '谨慎使用',
+  unsafe: '存在安全隐患',
+}
+
 export interface InspectionRecord {
   id: string
   returnRecordId: string
@@ -274,7 +282,7 @@ export interface InspectionRecord {
   inspectorName?: string
   inspectedAt?: string
   status: InspectionStatus
-  safetyAssessment?: 'safe' | 'caution' | 'unsafe'
+  safetyAssessment?: SafetyAssessment
   inspectionNotes?: string
   maintenanceRequired?: boolean
   reSterilizeRequired?: boolean

@@ -915,7 +915,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       if (sameSupplyConflict.length > 0) {
         inventoryPassed = false
-        const clsNames = new Set(sameSupplyConflict.map((o) => o.className).filter(Boolean))
+        const clsNames = new Set(sameSupplyConflict.map((o) => o.className).filter((x): x is string => !!x))
         conflictingClasses.push(...Array.from(clsNames))
         inventoryMessage = `用品已在以下课堂占用：${conflictingClasses.join('、')}`
       } else if (existingRes.length >= req.quantity) {
@@ -1045,7 +1045,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       set((state) => ({
         reservations: [
           ...state.reservations.map((r) =>
-            r.id === originalReservationId ? { ...r, status: 'cancelled' } : r
+            r.id === originalReservationId ? { ...r, status: 'cancelled' as const } : r
           ),
           newRes,
         ],
